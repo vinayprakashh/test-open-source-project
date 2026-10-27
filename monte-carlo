@@ -1,0 +1,23 @@
+import numpy as np
+import yfinance as yf
+import historicalvolatilitycalculation as hv
+import matplotlib.pyplot as plt
+def MCforauniverse(Stockprice,drift,volatility,days=252):
+    dt=1/days
+    l=[Stockprice]
+    for i in range(days):
+        shock=np.random.normal(loc=0.0, scale=1.0)
+        growth=np.exp((drift-0.5*volatility**2)*dt+volatility*(dt)**0.5*shock)
+        Stockprice=Stockprice*growth
+        l.append(Stockprice)
+    plt.figure(figsize=(10, 5))
+    plt.plot(l,color="blue")
+    plt.legend()
+    plt.show()
+    
+SN=input("Stock name")
+t=int(input("Enter number of days"))
+current_price=yf.Ticker(SN).fast_info.last_price
+sigma=hv.historical_volatility(SN)
+for i in range(100):
+    MCforauniverse(current_price,0.05,sigma)
